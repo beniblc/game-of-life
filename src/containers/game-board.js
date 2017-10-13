@@ -7,18 +7,22 @@ class GameBoard extends Component {
     
     return (
       <div>
-        <svg width="601" height="421">
+        <svg width="991" height="551">
           {
             this.props.board.map(
               (item , i) => (
                 item.map(
                   (item2, j) => (
                     <rect
+                      id={i}
                       key={j} 
-                      width="5"
-                      height="5"
-                      x={(i*6)+1}
-                      y={(j*6)+1}
+                      width="10"
+                      height="10"
+                      x={(i*11)+1}
+                      y={(j*11)+1}
+                      style={item2.live == false ? {fill: 'gainsboro' }: {fill:'palegreen'} }
+                      onClick={() => console.log(i + ' + ' + j) 
+                      }
                     />
                   )
                 )
