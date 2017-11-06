@@ -2,8 +2,27 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
 class GameBoard extends Component {
+
+  tick = () => this.setState( {time: this.state.time + 1 });
+
+  stop = () => clearInterval(this.interval) || this.setState({ time: 0 });
+  start = () => this.interval = setInterval(this.tick, 1000);
+  
+  constructor() {
+    super();
+
+    this.state={
+      time: 0
+    };
+  }
+
+  componentDidMount() {
+    this.interval = setInterval(this.tick, 1000);
+  }
+
   render() {
-    console.log(this.props.board[0])
+    console.log(this.props.board[0]);
+    console.log(this.state.time);
     
     return (
       <div>
@@ -21,8 +40,7 @@ class GameBoard extends Component {
                       x={(i*11)+1}
                       y={(j*11)+1}
                       style={item2.live == false ? {fill: 'gainsboro' }: {fill:'palegreen'} }
-                      onClick={() => console.log(i + ' + ' + j) 
-                      }
+                      onClick={() => console.log(i + ' + ' + j)}
                     />
                   )
                 )
@@ -30,6 +48,8 @@ class GameBoard extends Component {
             )
           }
         </svg>
+        <button onClick={() => this.start()}>start</button>
+        <button onClick={() => this.stop()}>stop</button>
       </div>
     )
   }
