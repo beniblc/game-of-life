@@ -4,24 +4,21 @@ import { connect } from 'react-redux';
 class GameBoard extends Component {
 
   tick = () => this.setState( {time: this.state.time + 1 });
-
-  stop = () => clearInterval(this.interval) || this.setState({ time: 0 });
-  start = () => this.interval = setInterval(this.tick, 1000);
+  
+  stop = () => clearInterval(this.interval) || this.setState({ time: 0, status: false });
+  start = () => this.interval = this.setState({status: true}) || setInterval(this.tick, 1000);
   
   constructor() {
     super();
 
     this.state={
-      time: 0
+      time: 0,
+      status: false
     };
   }
 
-  componentDidMount() {
-    this.interval = setInterval(this.tick, 1000);
-  }
-
   render() {
-    console.log(this.props.board[0]);
+    console.log(this.props.board);
     console.log(this.state.time);
     
     return (
@@ -29,18 +26,18 @@ class GameBoard extends Component {
         <svg width="991" height="551">
           {
             this.props.board.map(
-              (item , i) => (
+              (item , i) => ( // i is the col
                 item.map(
-                  (item2, j) => (
+                  (item2, j) => ( // j is the row
                     <rect
-                      id={i}
+                      id={50*i+(j+1)}
                       key={j} 
                       width="10"
                       height="10"
-                      x={(i*11)+1}
-                      y={(j*11)+1}
+                      x={(j*11)+1}
+                      y={(i*11)+1}
                       style={item2.live == false ? {fill: 'gainsboro' }: {fill:'palegreen'} }
-                      onClick={() => console.log(i + ' + ' + j)}
+                      onClick={() => console.log(this.props.board[i][j].id)}
                     />
                   )
                 )
