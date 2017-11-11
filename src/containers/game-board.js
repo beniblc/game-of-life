@@ -3,56 +3,6 @@ import { connect } from 'react-redux';
 
 class GameBoard extends Component {
 
-  tick = () => this.setState({time: this.state.time + 1 });
-  
-  stop = () => clearInterval(this.interval) || this.setState({ time: 0, status: false });
-  start = () => this.interval = this.setState({status: true}) | setInterval(this.runSimulation, 1000);
-
-  changeStatus = (row, col) => {
-    var holder = this.state.board;
-      holder[1][row][col].live == false ? holder[1][row][col].live = true | console.log('yes') : holder[1][row][col].live = false | console.log('no');
-      this.setState({ board: holder }); 
-    
-  }
-
-  runSimulation = () => {
-    var holder = this.state.board;
-    for(var i=0;i<holder[0].rows;i++) {
-      for(var j=0;j<holder[0].cols;j++) {
-        if(holder[1][i][j].live == 1 ){  
-          if(holder[1][i][j].id == 1) {
-            console.log('top right corner: ' + holder[1][i][j].id);
-            if(holder[1][i-1]==undefined) {console.log('no such thing')}
-          }
-          else if(holder[1][i][j].id === holder[0].cols*(holder[0].rows-1)+1){
-            console.log('bottom left corner: '+ holder[1][i][j].id);
-          }
-          else if(holder[1][i][j].id === holder[0].cols){
-            console.log('top right corner: '+ holder[1][i][j].id);
-          }
-          else if(holder[1][i][j].id === holder[0].cols*holder[0].rows){
-            console.log('bottom right corner: '+ holder[1][i][j].id);
-          }
-          else if(holder[1][i][j].id%holder[0].cols === 1){
-            console.log('left column: '+ holder[1][i][j].id);
-          }
-          else if(holder[1][i][j].id%holder[0].cols === 0){
-            console.log('right column: '+ holder[1][i][j].id);
-          }
-          else if(holder[1][i][j].id <= holder[0].cols){
-            console.log('top row: '+ holder[1][i][j].id);
-          }
-          else if(holder[1][i][j].id > holder[0].cols*(holder[0].rows-1)){
-            console.log('bottom row: '+ holder[1][i][j].id);
-          }
-          else {
-            console.log('middle cell: ' + holder[1][i][j].id);
-          }
-        }    
-      }
-    }
-  }
-  
   constructor(props) {
     super(props);
 
@@ -63,10 +13,55 @@ class GameBoard extends Component {
     };
   }
 
-  render() {
-    this.state.status == false ? console.log(this.state.board): '';
-    this.state.status == true ? console.log(this.state.time) : '';
+  tick = () => this.setState({time: this.state.time + 1 });
+  
+  stop = () => clearInterval(this.interval) || this.setState({ time: 0, status: false });
+  start = () => this.setState({board: this.runSimulation(this.state.board)}) | this.setState({status: true} | console.log(this.state.board[1]));
+
+  changeStatus = (row, col) => {
+    var holder = this.state.board;
+      holder[1][row][col].live == false ? holder[1][row][col].live = true : holder[1][row][col].live = false;
+      this.setState({ board: holder }); 
     
+  }
+
+  runSimulation = (dataSet) => { 
+    
+    var counter = (data, row, col) => {
+
+      var count = 0;
+
+      var valCheck = (val, row, col) => {
+        var check = false;
+        val[row] == undefined ? check = true 
+        : val[row][col] == undefined ? check = true : '';
+        return check;
+      }
+
+      valCheck(data, (row-1), (col-1)) == false ? data[row-1][col-1].live == 1 ? count++ : '' : '';
+      valCheck(data, (row-1), (col)) == false ? data[row-1][col].live == 1 ? count++ : '' : '';
+      valCheck(data, (row-1), (col+1)) == false ? data[row-1][col+1].live == 1 ? count++ : '' : '';
+      valCheck(data, (row), (col-1)) == false ? data[row][col-1].live == 1 ? count++ : '' : '';
+      valCheck(data, (row), (col+1)) == false ? data[row][col+1].live == 1 ? count++: '' : '';
+      valCheck(data, (row+1), (col-1)) == false ? data[row+1][col-1].live == 1 ? count++ : '' : ''; 
+      valCheck(data, (row+1), (col)) == false ? data[row+1][col].live == 1 ? count++ : '' : '';
+      valCheck(data, (row+1), (col+1)) == false ? data[row+1][col+1].live == 1 ? count++ : '' : '';
+
+      return count;
+    }
+
+    var holder = this.state.board;
+    console.log('starting');
+    for(var i=0;i<holder[0].rows;i++) {
+      for(var j=0;j<holder[0].cols;j++) {
+        var count = counter(holder[1], i, j);       
+        //console.log(i +  ',' + j + ': ' + count + ', ' + holder[1][i][j].live);
+        if(this.state.board[1][i][j].live==false) {}
+      } 
+    }
+  }
+
+  render() {    
     return (
       <div>
         <svg width="991" height="551">
@@ -91,7 +86,7 @@ class GameBoard extends Component {
             )
           }
         </svg>
-        <button onClick={() => this.start()}>start</button>
+        <button onClick={() => this.state.status == false ? this.runSimulation(this.state.board) : ''}>start</button>
         <button onClick={() => this.stop()}>stop</button>
       </div>
     )
