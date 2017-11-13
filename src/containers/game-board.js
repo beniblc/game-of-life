@@ -7,16 +7,14 @@ class GameBoard extends Component {
     super(props);
 
     this.state={
-      time: 1,
       status: false,
       board: this.props.board
     };
   }
 
-  tick = () => this.setState({time: this.state.time + 1 });
-  
-  stop = () => clearInterval(this.interval) || this.setState({ time: 0, status: false });
-  start = () => this.setState({board: this.runSimulation(this.state.board)}) | this.setState({status: true} | console.log(this.state.board[1]));
+  stop = () => clearInterval(this.timerId) | this.setState({status: false})
+  start = () => !this.timerId ? this.timerId = setInterval(this.runSimulation, 500) | this.setState({status: true})
+                : this.timerId = setInterval(this.runSimulation, 500) | this.setState({status: true})
 
   changeStatus = (row, col) => {
     var holder = this.state.board;
@@ -25,7 +23,7 @@ class GameBoard extends Component {
     
   }
 
-  runSimulation = (dataSet) => { 
+  runSimulation = () => { 
     
     var counter = (data, row, col) => {
 
@@ -50,15 +48,27 @@ class GameBoard extends Component {
       return count;
     }
 
-    var holder = this.state.board;
+    var holder = [];
+    holder.push(this.state.board[0])
+    holder.push([]);
     console.log('starting');
-    for(var i=0;i<holder[0].rows;i++) {
-      for(var j=0;j<holder[0].cols;j++) {
-        var count = counter(holder[1], i, j);       
-        //console.log(i +  ',' + j + ': ' + count + ', ' + holder[1][i][j].live);
-        if(this.state.board[1][i][j].live==false) {}
+    for(var i=0;i<this.state.board[0].rows;i++) {
+      holder[1].push([]);
+      for(var j=0;j<this.state.board[0].cols;j++) {
+        var count = counter(this.state.board[1], i, j);       
+        if(this.state.board[1][i][j].live==false) {
+          if(this.state.status == false){holder[1][i].push({id: this.state.board[1][i][j].id, live: false});}
+          else if(count===3){holder[1][i].push({id: this.state.board[1][i][j].id, live: true});}
+          else{holder[1][i].push({id: this.state.board[1][i][j].id, live: false});}
+        }
+        else{
+          if(this.state.status == false){holder[1][i].push({id: this.state.board[1][i][j].id, live: false});}
+          else if (count > 1 && count<=3) {holder[1][i].push({id: this.state.board[1][i][j].id, live: true});}
+          else{holder[1][i].push({id: this.state.board[1][i][j].id, live: false});}
+        }
       } 
     }
+    this.setState({board: holder});
   }
 
   render() {    
@@ -86,8 +96,9 @@ class GameBoard extends Component {
             )
           }
         </svg>
-        <button onClick={() => this.state.status == false ? this.runSimulation(this.state.board) : ''}>start</button>
+        <button onClick={() => this.state.status == false ? this.start() : ''}>start</button>
         <button onClick={() => this.stop()}>stop</button>
+        <button onClick={() => this.state.status == false ? this.runSimulation(): ''}>clear</button>
       </div>
     )
   }

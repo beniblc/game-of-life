@@ -14,5 +14,5 @@ export default function() {
         }
         return grid;
     }
-    return makeGrid(5, 5); 
+    return makeGrid(50, 90); 
 }
