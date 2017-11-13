@@ -8,19 +8,19 @@ class GameBoard extends Component {
 
     this.state={
       status: false,
-      board: this.props.board
+      board: this.props.board,
+      generation: 0
     };
   }
 
   stop = () => clearInterval(this.timerId) | this.setState({status: false})
-  start = () => !this.timerId ? this.timerId = setInterval(this.runSimulation, 500) | this.setState({status: true})
+  start = () => !this.timerId ? this.timerId = this.setState({status: true, generation: 0}) | setInterval(this.runSimulation, 500)
                 : this.timerId = setInterval(this.runSimulation, 500) | this.setState({status: true})
 
   changeStatus = (row, col) => {
     var holder = this.state.board;
       holder[1][row][col].live == false ? holder[1][row][col].live = true : holder[1][row][col].live = false;
-      this.setState({ board: holder }); 
-    
+      this.setState({ board: holder });  
   }
 
   runSimulation = () => { 
@@ -68,7 +68,8 @@ class GameBoard extends Component {
         }
       } 
     }
-    this.setState({board: holder});
+    this.state.status == true? this.setState({board: holder, generation: this.state.generation + 1})
+    : this.setState({board: holder, generation: 0})
   }
 
   render() {    
@@ -99,6 +100,7 @@ class GameBoard extends Component {
         <button onClick={() => this.state.status == false ? this.start() : ''}>start</button>
         <button onClick={() => this.stop()}>stop</button>
         <button onClick={() => this.state.status == false ? this.runSimulation(): ''}>clear</button>
+        <div>{this.state.generation}</div>
       </div>
     )
   }
@@ -111,5 +113,3 @@ function mapStateToProps(state) {
 }
 
 export default connect(mapStateToProps)(GameBoard);
-
-
